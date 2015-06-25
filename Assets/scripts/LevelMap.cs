@@ -12,9 +12,6 @@ public class LevelMap : MonoBehaviour
   public  Sprite  m_upRoadEndsLeft;
   public  Sprite  m_upRoadEndsRight;
 
-  public  Sprite  m_leftPfmDebug;
-  public  Sprite  m_rightPfmDebug;
-
   public  Sprite  m_upTile;
   public  Sprite  m_downTile;
   public  Sprite  m_leftTile;
@@ -29,6 +26,10 @@ public class LevelMap : MonoBehaviour
   public  Sprite  m_rightUpTile;
   public  Sprite  m_middleTile;
 
+  public  Sprite  m_pfmDebug;
+  public  Sprite  m_leftPfmDebug;
+  public  Sprite  m_rightPfmDebug;
+  
   public  Dictionary<TileShape, Sprite> accounts;
 
   TileSheet m_tileSheet;
@@ -72,7 +73,7 @@ public class LevelMap : MonoBehaviour
 
     GenerateLevel ();
 
-    m_platformManager = new PlatformManager (m_tileSheet, m_leftPfmDebug, m_rightPfmDebug, m_spacing);
+    m_platformManager = new PlatformManager (m_tileSheet, m_pfmDebug, m_leftPfmDebug, m_rightPfmDebug, m_spacing);
   }
 
   void GenerateLevel ()
@@ -269,7 +270,7 @@ public class LevelMap : MonoBehaviour
       Clear ();
       GenerateLevel ();
 
-      m_platformManager.CreateAll (m_tileSheet, m_leftPfmDebug, m_rightPfmDebug, m_spacing);
+      m_platformManager.CreateAll (m_tileSheet, m_pfmDebug, m_leftPfmDebug, m_rightPfmDebug, m_spacing);
     }
   }
 

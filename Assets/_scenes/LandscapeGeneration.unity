@@ -282,14 +282,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3412f52eb7cee4eb2a54f3fe0170ece5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_width: 200
-  m_height: 100
+  m_width: 100
+  m_height: 50
   m_spacing: {x: 63, y: 63}
   m_upRoad: {fileID: 21300000, guid: d0624d3529949419dbf6164c8a9b945e, type: 3}
   m_upRoadEndsLeft: {fileID: 21300000, guid: d0624d3529949419dbf6164c8a9b945e, type: 3}
   m_upRoadEndsRight: {fileID: 21300000, guid: d0624d3529949419dbf6164c8a9b945e, type: 3}
-  m_leftPfmDebug: {fileID: 21300000, guid: db6ea961466c64668b1c335140045e27, type: 3}
-  m_rightPfmDebug: {fileID: 21300000, guid: 9018658d05fda4bad96cfe312df37074, type: 3}
   m_upTile: {fileID: 21300000, guid: d0624d3529949419dbf6164c8a9b945e, type: 3}
   m_downTile: {fileID: 21300000, guid: 243d3d186417c45fbab5935d6384634f, type: 3}
   m_leftTile: {fileID: 21300000, guid: b313724e4097b43dabda3ee8901628ba, type: 3}
@@ -305,6 +303,9 @@ MonoBehaviour:
   m_rightDownEndTile: {fileID: 21300000, guid: 092b946f30f7e4ef9998e6caa55baa04, type: 3}
   m_rightUpTile: {fileID: 21300000, guid: b54b54a784ad44b35be16f265f7d8dbc, type: 3}
   m_middleTile: {fileID: 21300000, guid: d7800349a3a9149a388aab89da0032cb, type: 3}
+  m_pfmDebug: {fileID: 21300000, guid: fb2b53e07e7a646b2853bfc44d928527, type: 3}
+  m_leftPfmDebug: {fileID: 21300000, guid: db6ea961466c64668b1c335140045e27, type: 3}
+  m_rightPfmDebug: {fileID: 21300000, guid: 9018658d05fda4bad96cfe312df37074, type: 3}
 --- !u!4 &1470883325
 Transform:
   m_ObjectHideFlags: 0
