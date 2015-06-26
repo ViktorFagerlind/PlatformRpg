@@ -59,7 +59,7 @@ public class PlatformManager
 
     CreateCandidate (tileSheet, pfmSprite, leftDebugSprite, rightDebugSprite, spacing);
 
-    createDebugInfo (pfmSprite, leftDebugSprite, rightDebugSprite, spacing);
+    //createDebugInfo (pfmSprite, leftDebugSprite, rightDebugSprite, spacing);
     
     breadthFirstSearchVisitable (visited, out visitedPercentage);
     
