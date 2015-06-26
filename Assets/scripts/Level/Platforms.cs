@@ -48,12 +48,25 @@ public class PlatformManager
   GameObject      m_baseObject;
   bool[,]         m_connections;
 
-  public PlatformManager (TileSheet tileSheet, Sprite pfmSprite, Sprite leftDebugSprite, Sprite rightDebugSprite, Vector2 spacing)
+  public PlatformManager ()
   {
-    CreateAll (tileSheet, pfmSprite, leftDebugSprite, rightDebugSprite, spacing);
+  }
+  
+  public bool Create (TileSheet tileSheet, Sprite pfmSprite, Sprite leftDebugSprite, Sprite rightDebugSprite, Vector2 spacing)
+  {
+    HashSet<int>  visited = new HashSet<int> ();
+    float         visitedPercentage;
+
+    CreateCandidate (tileSheet, pfmSprite, leftDebugSprite, rightDebugSprite, spacing);
+
+    createDebugInfo (pfmSprite, leftDebugSprite, rightDebugSprite, spacing);
+    
+    breadthFirstSearchVisitable (visited, out visitedPercentage);
+    
+    return checkCandidate (visited, visitedPercentage, tileSheet.m_width, tileSheet.m_height);
   }
 
-  public void CreateAll (TileSheet tileSheet, Sprite pfmSprite, Sprite leftDebugSprite, Sprite rightDebugSprite, Vector2 spacing)
+  public void CreateCandidate (TileSheet tileSheet, Sprite pfmSprite, Sprite leftDebugSprite, Sprite rightDebugSprite, Vector2 spacing)
   {
     if (m_baseObject != null)
       GameObject.Destroy (m_baseObject);
@@ -73,8 +86,42 @@ public class PlatformManager
     trimPlatforms ();
     
     setupConnections ();
-    
-    createDebugInfo (pfmSprite, leftDebugSprite, rightDebugSprite, spacing);
+  }
+
+  bool checkCandidate (HashSet<int>  visited, float visitedPercentage, int width, int height)
+  {
+    const float minVisitedPercentage = 80f;
+    const float minAreaCoverage      = 70f;
+
+    if (visitedPercentage < minVisitedPercentage)
+    {
+      Debug.Log ("Discarding candidate due to visited percentage: " + visitedPercentage + "% (<" + minVisitedPercentage + "%)");
+      return false;
+    }
+
+    // Find the boundries of the candidate
+    // Start with index 0 which we know is within "visited"
+    int left  = m_platforms [0].m_left.x;
+    int right = m_platforms [0].m_right.x;
+    int up    = Mathi.Max (m_platforms [0].m_left.y, m_platforms [0].m_right.y);
+    int down  = Mathi.Min (m_platforms [0].m_left.y, m_platforms [0].m_right.y);
+
+    foreach (int i in visited)
+    {
+      left  = Mathi.Min (left,  m_platforms[i].m_left.x);
+      right = Mathi.Max (right, m_platforms[i].m_right.x);
+
+      up    = Mathi.Max (up,   Mathi.Max (m_platforms[i].m_left.y, m_platforms[i].m_right.y));
+      down  = Mathi.Min (down, Mathi.Min (m_platforms[i].m_left.y, m_platforms[i].m_right.y));
+    }
+
+    float horizontalCoverage  = 100f * (float)(up - down) / (float)height;
+    float verticalCoverage    = 100f * (float)(right - left) / (float)width;
+
+    Debug.Log ("Horizontal coverage: " + horizontalCoverage + "% (" + minAreaCoverage + "%)");
+    Debug.Log ("Vertical coverage: " + verticalCoverage + "% (" + minAreaCoverage + "%)");
+
+    return horizontalCoverage >= minAreaCoverage && verticalCoverage >= minAreaCoverage;
   }
 
   void setupConnections ()
@@ -83,22 +130,56 @@ public class PlatformManager
 
     for (int i=0; i< m_platforms.Count; i++)
     {
+      Platform pi = m_platforms[i];
+
       for (int j=i+1; j< m_platforms.Count; j++)
       {
         if (m_connections[i, j])
           continue;
 
-        Platform pi = m_platforms[i];
         Platform pj = m_platforms[j];
 
         if (pi.m_left.x <= pj.m_right.x && pi.m_right.x >= pj.m_left.x)
         {
           m_connections[i,j] = m_connections[j,i] = true;
-          Debug.Log (pi.name + " connected to " + pj.name);
+//          Debug.Log (pi.name + " connected to " + pj.name);
         }
       }
     }
-     
+  }
+
+  void breadthFirstSearchVisitable (HashSet<int> visited, out float percentage)
+  {
+    Queue<int> toParse = new Queue<int> ();
+    visited.Clear ();
+    visited.Add (0);
+    toParse.Enqueue (0);
+
+    while (toParse.Count > 0)
+    {
+      int current = toParse.Dequeue ();
+
+      for (int i=0; i < m_platforms.Count; i++)
+      {
+        if (current == i)
+          continue;
+
+        if (m_connections[current, i] && !visited.Contains (i))
+        {
+          visited.Add (i);
+          toParse.Enqueue (i);
+        }
+      }
+    }
+
+    percentage = 100f*(float)visited.Count / (float)m_platforms.Count;
+
+    /*
+    Debug.Log ("Platforms included:");
+    foreach (int i in visited)
+      Debug.Log (m_platforms[i].name);
+    */
+    Debug.Log ("Found " + visited.Count + " out of " + m_platforms.Count + "(" + percentage + "%)");
   }
   
   void trimPlatforms ()
@@ -153,7 +234,7 @@ public class PlatformManager
         LineRenderer renderer = o.AddComponent<LineRenderer>();
         renderer.material = new Material(Shader.Find("Particles/Additive"));
         renderer.SetColors (Color.blue, Color.red);
-        renderer.SetWidth (5f, 5f);
+        renderer.SetWidth (20f, 20f);
         renderer.SetVertexCount (2);
         renderer.SetPosition(0, new Vector3 (pi.m_pos.x * spacing.x, pi.m_pos.y * spacing.x, -1));
         renderer.SetPosition(1, new Vector3 (pj.m_pos.x * spacing.x, pj.m_pos.y * spacing.x, -1));

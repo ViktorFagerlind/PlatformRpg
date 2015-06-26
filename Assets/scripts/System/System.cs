@@ -27,3 +27,17 @@ public class VecInt2
     return new VecInt2 (x, y);
   }
 }
+
+public class Mathi
+{
+  public static int Max (int a, int b)
+  {
+    return a > b ? a : b;
+  }
+   
+  public static int Min (int a, int b)
+  {
+    return a < b ? a : b;
+  }
+  
+}

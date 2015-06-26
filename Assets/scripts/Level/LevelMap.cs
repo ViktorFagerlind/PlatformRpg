@@ -71,13 +71,27 @@ public class LevelMap : MonoBehaviour
     renderer.sprite = sprite;
     renderer.sortingLayerName = "Level base";
 
-    GenerateLevel ();
+    m_platformManager = new PlatformManager ();
 
-    m_platformManager = new PlatformManager (m_tileSheet, m_pfmDebug, m_leftPfmDebug, m_rightPfmDebug, m_spacing);
+    GenerateLevel ();
   }
 
   void GenerateLevel ()
   {
+    int tries = 0;
+    do
+    {
+      GenerateLevelPattern ();
+      tries++;
+    } while (!m_platformManager.Create (m_tileSheet, m_pfmDebug, m_leftPfmDebug, m_rightPfmDebug, m_spacing));
+    
+    Debug.Log ("Found candidate after " + tries + " tries");
+  }
+  
+  void GenerateLevelPattern ()
+  {
+    Clear ();
+
     PerlinCreate ();
     
     fatten ();
@@ -267,10 +281,7 @@ public class LevelMap : MonoBehaviour
   {
     if (Input.GetKeyDown ("space"))
     {
-      Clear ();
       GenerateLevel ();
-
-      m_platformManager.CreateAll (m_tileSheet, m_pfmDebug, m_leftPfmDebug, m_rightPfmDebug, m_spacing);
     }
   }
 
